@@ -170,3 +170,27 @@ COMMIT;
 -- DQL commands are used to query data from the database.
 -- SELECT
 ---------------------------------------------------------------------
+
+---------------------------------------------------------------------
+-- Total Revenues from Rentals, BY YEAR and month
+---------------------------------------------------------------------
+SELECT SUM(amount) as total_revenues, 
+EXTRACT (YEAR FROM payment_date) as payment_year, 
+EXTRACT(MONTH FROM payment_date) as payment_month
+FROM payment p
+INNER JOIN rental r ON p.rental_id = r.rental_id
+GROUP BY EXTRACT (YEAR FROM payment_date), EXTRACT(MONTH FROM payment_date)
+ORDER BY EXTRACT (YEAR FROM payment_date), EXTRACT(MONTH FROM payment_date)
+
+
+---------------------------------------------------------------------
+-- Average rental by category
+---------------------------------------------------------------------
+SELECT cat.name, 
+AVG(p.amount) AS avarage_rental
+FROM payment p
+INNER JOIN rental r ON r.rental_id = p.rental_id
+INNER JOIN inventory i ON i.inventory_id = r.inventory_id
+INNER JOIN film_category f ON  f.film_id = i.film_id
+INNER JOIN category cat ON cat.category_id = f.category_id
+GROUP BY cat.name
